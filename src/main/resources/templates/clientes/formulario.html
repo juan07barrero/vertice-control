@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${cliente.id == null ? 'Nuevo cliente' : 'Editar cliente'}"></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --negro: #0d0e12;
+            --negro-card: #14161d;
+            --azul: #243c96;
+            --azul-2: #1b2f78;
+            --naranja: #d98a1e;
+            --texto: #f4efe8;
+            --texto-suave: #b9c2d6;
+            --borde: rgba(255,255,255,0.08);
+            --sombra: 0 14px 30px rgba(0,0,0,0.35);
+            --error: #ff8f8f;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(36,60,150,0.18), transparent 28%),
+                linear-gradient(180deg, #101116 0%, #0b0c10 100%);
+            color: var(--texto);
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 24px 18px 100px;
+        }
+
+        .header-card,
+        .form-card {
+            background: linear-gradient(180deg, #151822 0%, #101116 100%);
+            border: 1px solid rgba(36,60,150,0.35);
+            border-radius: 26px;
+            padding: 22px;
+            box-shadow: var(--sombra);
+        }
+
+        .header-card {
+            margin-bottom: 20px;
+        }
+
+        .header-card h1 {
+            margin: 0 0 8px;
+            font-size: 2rem;
+        }
+
+        .header-card p {
+            margin: 0;
+            color: var(--texto-suave);
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--texto);
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--borde);
+            background: #0f1117;
+            color: var(--texto);
+            font-size: 0.96rem;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: rgba(217,138,30,0.7);
+            box-shadow: 0 0 0 3px rgba(217,138,30,0.12);
+        }
+
+        .error {
+            margin-top: 6px;
+            color: var(--error);
+            font-size: 0.88rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            border: 1px solid rgba(36,60,150,0.35);
+            box-shadow: var(--sombra);
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--azul), var(--azul-2));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #171922;
+            color: var(--texto);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header-card">
+        <h1 th:text="${cliente.id == null ? 'Nuevo cliente' : 'Editar cliente'}"></h1>
+        <p>Registra o actualiza la información de un cliente dentro de Vértice Control.</p>
+    </div>
+
+    <div class="form-card">
+        <form th:action="@{/clientes/guardar}" th:object="${cliente}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" type="text" th:field="*{nombre}">
+                <div class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input id="telefono" type="text" th:field="*{telefono}">
+                <div class="error" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="direccion">Dirección</label>
+                <input id="direccion" type="text" th:field="*{direccion}">
+            </div>
+
+            <div class="form-group">
+                <label for="notas">Notas</label>
+                <textarea id="notas" th:field="*{notas}"></textarea>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" type="submit">Guardar cliente</button>
+                <a class="btn btn-secondary" th:href="@{/clientes}">← Volver al listado</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

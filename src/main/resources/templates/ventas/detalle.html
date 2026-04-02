@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de venta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --azul: #243c96;
+            --azul-2: #1b2f78;
+            --naranja: #d98a1e;
+            --texto: #f4efe8;
+            --texto-suave: #b9c2d6;
+            --borde: rgba(255,255,255,0.08);
+            --sombra: 0 14px 30px rgba(0,0,0,0.35);
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(36,60,150,0.18), transparent 28%),
+                linear-gradient(180deg, #101116 0%, #0b0c10 100%);
+            color: var(--texto);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px 18px 100px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, #151822 0%, #101116 100%);
+            border: 1px solid rgba(36,60,150,0.35);
+            border-radius: 26px;
+            padding: 22px;
+            box-shadow: var(--sombra);
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            margin-top: 10px;
+            line-height: 1.9;
+        }
+
+        .summary strong {
+            color: var(--naranja);
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            border: 1px solid rgba(36,60,150,0.35);
+            box-shadow: var(--sombra);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--azul), var(--azul-2));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #171922;
+            color: var(--texto);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        th {
+            background: rgba(36,60,150,0.18);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="card">
+        <h1>Detalle de venta</h1>
+        <p th:text="'Cliente: ' + ${venta.cliente.nombre}"></p>
+        <p th:text="'Producto: ' + ${venta.producto.nombre + ' - ' + venta.producto.presentacion}"></p>
+        <p th:text="'Fecha: ' + ${venta.fecha}"></p>
+        <p th:text="'Estado: ' + ${venta.estadoPago}"></p>
+
+        <div class="summary">
+            <div><strong>Total venta:</strong> <span th:text="${'$ ' + venta.total}"></span></div>
+            <div><strong>Total abonado:</strong> <span th:text="${'$ ' + totalAbonado}"></span></div>
+            <div><strong>Saldo pendiente:</strong> <span th:text="${'$ ' + saldoPendiente}"></span></div>
+        </div>
+
+        <div class="actions">
+            <a class="btn btn-primary"
+               th:if="${saldoPendiente > 0}"
+               th:href="@{/abonos/nuevo/{ventaId}(ventaId=${venta.id})}">
+                + Registrar abono
+            </a>
+
+            <a class="btn btn-secondary" th:href="@{/ventas}">← Volver a ventas</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Historial de abonos</h2>
+
+        <div th:if="${#lists.isEmpty(abonos)}">
+            <p>No hay abonos registrados todavía.</p>
+        </div>
+
+        <div class="table-wrap" th:if="${!#lists.isEmpty(abonos)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Método</th>
+                    <th>Observación</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="abono : ${abonos}">
+                    <td th:text="${abono.fecha}"></td>
+                    <td th:text="${'$ ' + abono.monto}"></td>
+                    <td th:text="${abono.metodoPago}"></td>
+                    <td th:text="${abono.observacion}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

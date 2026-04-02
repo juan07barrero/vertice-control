@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del cierre</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --azul: #243c96;
+            --naranja: #d98a1e;
+            --texto: #f4efe8;
+            --texto-suave: #b9c2d6;
+            --borde: rgba(255,255,255,0.08);
+            --sombra: 0 14px 30px rgba(0,0,0,0.35);
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(36,60,150,0.18), transparent 28%),
+                linear-gradient(180deg, #101116 0%, #0b0c10 100%);
+            color: var(--texto);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 18px 100px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, #151822 0%, #101116 100%);
+            border: 1px solid rgba(36,60,150,0.35);
+            border-radius: 26px;
+            padding: 22px;
+            box-shadow: var(--sombra);
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .summary strong {
+            color: var(--naranja);
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            background: #171922;
+            color: var(--texto);
+            border: 1px solid rgba(36,60,150,0.35);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        th {
+            background: rgba(36,60,150,0.18);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="card">
+        <h1 th:text="${cierre.nombre}"></h1>
+        <p th:text="'Estado: ' + ${cierre.estado}"></p>
+        <p th:text="'Fecha inicio: ' + ${cierre.fechaInicio}"></p>
+        <p th:text="'Fecha fin: ' + ${cierre.fechaFin}"></p>
+        <p th:text="${cierre.observaciones}"></p>
+
+        <div class="summary">
+            <div><strong>Total invertido:</strong> <span th:text="${'$ ' + totalInvertido}"></span></div>
+            <div><strong>Total vendido:</strong> <span th:text="${'$ ' + totalVendido}"></span></div>
+            <div><strong>Beneficio bruto:</strong> <span th:text="${'$ ' + beneficio}"></span></div>
+        </div>
+
+        <br>
+        <a class="btn" th:href="@{/cierres}">← Volver a cierres</a>
+    </div>
+
+    <div class="card">
+        <h2>Gastos asociados</h2>
+
+        <div th:if="${#lists.isEmpty(gastos)}">
+            <p>No hay gastos asociados a este cierre.</p>
+        </div>
+
+        <div class="table-wrap" th:if="${!#lists.isEmpty(gastos)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Categoría</th>
+                    <th>Descripción</th>
+                    <th>Monto</th>
+                    <th>Proveedor</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="gasto : ${gastos}">
+                    <td th:text="${gasto.fecha}"></td>
+                    <td th:text="${gasto.categoria}"></td>
+                    <td th:text="${gasto.descripcion}"></td>
+                    <td th:text="${'$ ' + gasto.monto}"></td>
+                    <td th:text="${gasto.proveedor}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Ventas asociadas</h2>
+
+        <div th:if="${#lists.isEmpty(ventas)}">
+            <p>No hay ventas asociadas a este cierre.</p>
+        </div>
+
+        <div class="table-wrap" th:if="${!#lists.isEmpty(ventas)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                    <th>Estado pago</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="venta : ${ventas}">
+                    <td th:text="${venta.fecha}"></td>
+                    <td th:text="${venta.cliente.nombre}"></td>
+                    <td th:text="${venta.producto.nombre + ' - ' + venta.producto.presentacion}"></td>
+                    <td th:text="${venta.cantidad}"></td>
+                    <td th:text="${'$ ' + venta.total}"></td>
+                    <td th:text="${venta.estadoPago}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

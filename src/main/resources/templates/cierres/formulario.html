@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo cierre</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --azul: #243c96;
+            --azul-2: #1b2f78;
+            --texto: #f4efe8;
+            --texto-suave: #b9c2d6;
+            --borde: rgba(255,255,255,0.08);
+            --sombra: 0 14px 30px rgba(0,0,0,0.35);
+            --error: #ff8f8f;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(36,60,150,0.18), transparent 28%),
+                linear-gradient(180deg, #101116 0%, #0b0c10 100%);
+            color: var(--texto);
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 24px 18px 100px;
+        }
+
+        .header-card, .form-card {
+            background: linear-gradient(180deg, #151822 0%, #101116 100%);
+            border: 1px solid rgba(36,60,150,0.35);
+            border-radius: 26px;
+            padding: 22px;
+            box-shadow: var(--sombra);
+        }
+
+        .header-card { margin-bottom: 20px; }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 13px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--borde);
+            background: #0f1117;
+            color: var(--texto);
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .error {
+            margin-top: 6px;
+            color: var(--error);
+            font-size: 0.88rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            border: 1px solid rgba(36,60,150,0.35);
+            box-shadow: var(--sombra);
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--azul), var(--azul-2));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #171922;
+            color: var(--texto);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header-card">
+        <h1>Nuevo cierre de caja</h1>
+        <p>Abre una nueva etapa para registrar inversión y operación.</p>
+    </div>
+
+    <div class="form-card">
+        <form th:action="@{/cierres/guardar}" th:object="${cierre}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" type="text" th:field="*{nombre}">
+                <div class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaInicio">Fecha de inicio</label>
+                <input id="fechaInicio" type="date" th:field="*{fechaInicio}">
+                <div class="error" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="estado">Estado</label>
+                <select id="estado" th:field="*{estado}">
+                    <option value="ABIERTO">ABIERTO</option>
+                    <option value="CERRADO">CERRADO</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea id="observaciones" th:field="*{observaciones}"></textarea>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" type="submit">Guardar cierre</button>
+                <a class="btn btn-secondary" th:href="@{/cierres}">← Volver al listado</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

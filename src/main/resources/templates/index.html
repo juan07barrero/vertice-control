@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vértice Control</title>
+    <style>
+        :root {
+            --negro: #0d0e12;
+            --negro-card: #14161d;
+            --azul: #243c96;
+            --azul-2: #1b2f78;
+            --naranja: #d98a1e;
+            --naranja-suave: #f0a43a;
+            --texto: #f4efe8;
+            --texto-suave: #b9c2d6;
+            --borde: rgba(255,255,255,0.08);
+            --sombra: 0 14px 30px rgba(0,0,0,0.35);
+            --rojo: #d45c5c;
+            --verde: #4e9a70;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(36,60,150,0.22), transparent 28%),
+                linear-gradient(180deg, #101116 0%, #0b0c10 100%);
+            color: var(--texto);
+        }
+
+        .app {
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 95px;
+        }
+
+        .topbar {
+            padding: 20px 18px 10px;
+        }
+
+        .brand {
+            position: relative;
+            border-radius: 28px;
+            overflow: hidden;
+            background: linear-gradient(180deg, #151822 0%, #101116 100%);
+            border: 1px solid rgba(36,60,150,0.35);
+            box-shadow: var(--sombra);
+        }
+
+        .brand-top {
+            position: relative;
+            padding: 18px 20px 14px;
+            background: linear-gradient(135deg, rgba(36,60,150,0.95), rgba(20,28,70,0.96));
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            overflow: hidden;
+        }
+
+        .brand-top::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            right: -80px;
+            top: -95px;
+            border-radius: 50%;
+            background:
+                repeating-conic-gradient(
+                    from 210deg,
+                    rgba(217,138,30,0.75) 0deg 7deg,
+                    transparent 7deg 14deg
+                );
+            opacity: 0.28;
+        }
+
+        .brand-mark {
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand-tag {
+            display: inline-block;
+            color: rgba(255,255,255,0.82);
+            font-size: 0.8rem;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .brand-title {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--texto);
+        }
+
+        .brand-subtitle {
+            margin: 8px 0 0;
+            color: rgba(255,255,255,0.84);
+            line-height: 1.45;
+            max-width: 85%;
+        }
+
+        .brand-bottom {
+            padding: 16px 20px 18px;
+            background: linear-gradient(180deg, rgba(20,22,29,0.98), rgba(15,16,21,1));
+        }
+
+        .brand-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .meta-pill {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: var(--texto-suave);
+            font-size: 0.82rem;
+            text-decoration: none;
+        }
+
+        .meta-pill strong {
+            color: var(--naranja-suave);
+            font-weight: 700;
+        }
+
+        .section {
+            padding: 0 18px;
+            margin-top: 18px;
+        }
+
+        .section-title {
+            margin: 0 0 12px;
+            font-size: 1rem;
+            color: var(--texto);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, #171922 0%, #12131a 100%);
+            border: 1px solid var(--borde);
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: var(--sombra);
+            text-decoration: none;
+            display: block;
+        }
+
+        .label {
+            font-size: 0.82rem;
+            color: var(--texto-suave);
+            margin-bottom: 8px;
+        }
+
+        .value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--texto);
+            line-height: 1.35;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .action {
+            background: linear-gradient(180deg, #1a1c24 0%, #13141a 100%);
+            border: 1px solid rgba(36,60,150,0.28);
+            border-radius: 18px;
+            padding: 16px;
+            color: var(--texto);
+            font-weight: 600;
+            box-shadow: var(--sombra);
+            text-decoration: none;
+            display: block;
+        }
+
+        .action span {
+            color: var(--naranja);
+            font-weight: 800;
+            margin-right: 4px;
+        }
+
+        .alerts {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .alert-item {
+            background: linear-gradient(180deg, #171922 0%, #12131a 100%);
+            border-radius: 18px;
+            padding: 15px 16px;
+            border-left: 5px solid var(--naranja);
+            border-top: 1px solid rgba(255,255,255,0.04);
+            border-right: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            box-shadow: var(--sombra);
+            text-decoration: none;
+            display: block;
+        }
+
+        .alert-item.red { border-left-color: var(--rojo); }
+        .alert-item.green { border-left-color: var(--verde); }
+
+        .alert-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--texto);
+        }
+
+        .alert-text {
+            color: var(--texto-suave);
+            font-size: 0.94rem;
+            line-height: 1.45;
+        }
+
+        .navbar {
+            position: fixed;
+            left: 50%;
+            bottom: 14px;
+            transform: translateX(-50%);
+            width: calc(100% - 24px);
+            max-width: 406px;
+            background: rgba(16, 17, 22, 0.96);
+            border: 1px solid rgba(36,60,150,0.35);
+            border-radius: 24px;
+            padding: 12px 10px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.42);
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-item {
+            color: rgba(244,239,232,0.68);
+            text-align: center;
+            font-size: 0.78rem;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: var(--texto);
+            font-weight: 700;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 50%;
+            margin: 0 auto 6px;
+        }
+
+        .nav-item.active .nav-dot {
+            background: var(--naranja);
+            box-shadow: 0 0 10px rgba(217,138,30,0.55);
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="topbar">
+        <div class="brand">
+            <div class="brand-top">
+                <div class="brand-mark">
+                    <div class="brand-tag">Café de especialidad · gestión interna</div>
+                    <h1 class="brand-title">VÉRTICE CONTROL</h1>
+                    <p class="brand-subtitle">
+                        Administra clientes, productos, ventas, gastos y cierres de caja desde un solo lugar.
+                    </p>
+                </div>
+            </div>
+
+            <div class="brand-bottom">
+                <div class="brand-meta">
+                    <a class="meta-pill" th:href="@{/cierres}">
+                        <strong>Cierre abierto</strong>
+                        <span th:text="${cierreAbierto != null ? cierreAbierto.nombre : 'Sin cierre abierto'}"></span>
+                    </a>
+                    <a class="meta-pill" th:href="@{/ventas}">
+                        <strong>Pendientes</strong>
+                        <span th:text="${ventasPendientes} + ' ventas'"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Resumen general</h2>
+        <div class="cards-grid">
+            <a class="card" th:href="@{/productos}">
+                <div class="label">Productos</div>
+                <div class="value" th:text="${totalProductos} + ' registrados'"></div>
+            </a>
+
+            <a class="card" th:href="@{/clientes}">
+                <div class="label">Clientes</div>
+                <div class="value" th:text="${totalClientes} + ' registrados'"></div>
+            </a>
+
+            <a class="card" th:href="@{/ventas}">
+                <div class="label">Total vendido</div>
+                <div class="value" th:text="${'$ ' + totalVendido}"></div>
+            </a>
+
+            <a class="card" th:href="@{/gastos}">
+                <div class="label">Total invertido</div>
+                <div class="value" th:text="${'$ ' + totalInvertido}"></div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Accesos rápidos</h2>
+        <div class="quick-actions">
+            <a class="action" th:href="@{/productos/nuevo}"><span>+</span>Nuevo producto</a>
+            <a class="action" th:href="@{/clientes/nuevo}"><span>+</span>Nuevo cliente</a>
+            <a class="action" th:href="@{/gastos/nuevo}"><span>+</span>Nuevo gasto</a>
+            <a class="action" th:href="@{/ventas/nuevo}"><span>+</span>Nueva venta</a>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Gestión de cierres</h2>
+        <div class="alerts">
+            <a class="alert-item" th:href="@{/cierres}">
+                <div class="alert-title">Ver cierres de caja</div>
+                <div class="alert-text">
+                    Consulta etapas abiertas y cerradas, junto con su inversión y beneficio.
+                </div>
+            </a>
+
+            <a class="alert-item green" th:href="@{/cierres/nuevo}">
+                <div class="alert-title">Abrir nuevo cierre</div>
+                <div class="alert-text">
+                    Inicia una nueva etapa de operación para separar gastos y ventas.
+                </div>
+            </a>
+
+            <a class="alert-item red" th:href="@{/ventas}">
+                <div class="alert-title">Ventas pendientes</div>
+                <div class="alert-text" th:text="${ventasPendientes} + ' venta(s) pendientes por cobrar.'"></div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="navbar">
+    <a class="nav-item active" th:href="@{/}">
+        <div class="nav-dot"></div>
+        Inicio
+    </a>
+    <a class="nav-item" th:href="@{/clientes}">
+        <div class="nav-dot"></div>
+        Clientes
+    </a>
+    <a class="nav-item" th:href="@{/ventas}">
+        <div class="nav-dot"></div>
+        Ventas
+    </a>
+    <a class="nav-item" th:href="@{/productos}">
+        <div class="nav-dot"></div>
+        Inventario
+    </a>
+    <a class="nav-item" th:href="@{/gastos}">
+        <div class="nav-dot"></div>
+        Gastos
+    </a>
+</div>
+</body>
+</html>

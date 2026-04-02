@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cierres de caja - Vértice Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --azul: #243c96;
+            --azul-2: #1b2f78;
+            --naranja: #d98a1e;
+            --texto: #f4efe8;
+            --texto-suave: #b9c2d6;
+            --borde: rgba(255,255,255,0.08);
+            --sombra: 0 14px 30px rgba(0,0,0,0.35);
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(36,60,150,0.18), transparent 28%),
+                linear-gradient(180deg, #101116 0%, #0b0c10 100%);
+            color: var(--texto);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px 18px 100px;
+        }
+
+        .header-card, .table-card, .empty-card {
+            background: linear-gradient(180deg, #151822 0%, #101116 100%);
+            border: 1px solid rgba(36,60,150,0.35);
+            border-radius: 26px;
+            padding: 22px;
+            box-shadow: var(--sombra);
+        }
+
+        .header-card { margin-bottom: 20px; }
+
+        .top-actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            border: 1px solid rgba(36,60,150,0.35);
+            box-shadow: var(--sombra);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--azul), var(--azul-2));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #171922;
+            color: var(--texto);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        th {
+            background: rgba(36,60,150,0.18);
+        }
+
+        .acciones a {
+            color: var(--naranja);
+            text-decoration: none;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+
+        .estado-abierto {
+            color: #7fe0a0;
+            font-weight: 700;
+        }
+
+        .estado-cerrado {
+            color: #ffb86b;
+            font-weight: 700;
+        }
+
+        @media (max-width: 720px) {
+            .table-card {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 760px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header-card">
+        <h1>Cierres de caja</h1>
+        <p>Gestiona los ciclos de inversión y operación de Vértice.</p>
+
+        <div class="top-actions">
+            <a class="btn btn-primary" th:href="@{/cierres/nuevo}">+ Nuevo cierre</a>
+            <a class="btn btn-secondary" th:href="@{/}">← Volver al inicio</a>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(cierres)}" class="empty-card">
+        No hay cierres registrados todavía.
+    </div>
+
+    <div th:if="${!#lists.isEmpty(cierres)}" class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Fecha inicio</th>
+                <th>Fecha fin</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cierre : ${cierres}">
+                <td th:text="${cierre.nombre}"></td>
+                <td th:text="${cierre.fechaInicio}"></td>
+                <td th:text="${cierre.fechaFin}"></td>
+                <td>
+                    <span th:if="${cierre.estado == 'ABIERTO'}" class="estado-abierto">ABIERTO</span>
+                    <span th:if="${cierre.estado == 'CERRADO'}" class="estado-cerrado">CERRADO</span>
+                </td>
+                <td class="acciones">
+                    <a th:href="@{/cierres/detalle/{id}(id=${cierre.id})}">Detalle</a>
+                    <a th:if="${cierre.estado == 'ABIERTO'}"
+                       th:href="@{/cierres/cerrar/{id}(id=${cierre.id})}">Cerrar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

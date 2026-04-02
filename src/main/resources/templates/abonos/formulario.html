@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar abono</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --azul: #243c96;
+            --azul-2: #1b2f78;
+            --naranja: #d98a1e;
+            --texto: #f4efe8;
+            --texto-suave: #b9c2d6;
+            --borde: rgba(255,255,255,0.08);
+            --sombra: 0 14px 30px rgba(0,0,0,0.35);
+            --error: #ff8f8f;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(36,60,150,0.18), transparent 28%),
+                linear-gradient(180deg, #101116 0%, #0b0c10 100%);
+            color: var(--texto);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px 18px 100px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, #151822 0%, #101116 100%);
+            border: 1px solid rgba(36,60,150,0.35);
+            border-radius: 26px;
+            padding: 22px;
+            box-shadow: var(--sombra);
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            line-height: 1.8;
+            margin-top: 10px;
+        }
+
+        .summary strong {
+            color: var(--naranja);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 13px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--borde);
+            background: #0f1117;
+            color: var(--texto);
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .error {
+            margin-top: 6px;
+            color: var(--error);
+            font-size: 0.88rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            border: 1px solid rgba(36,60,150,0.35);
+            box-shadow: var(--sombra);
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--azul), var(--azul-2));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #171922;
+            color: var(--texto);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        th {
+            background: rgba(36,60,150,0.18);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="card">
+        <h1>Registrar abono</h1>
+        <p th:text="'Venta de: ' + ${venta.cliente.nombre}"></p>
+        <p th:text="'Producto: ' + ${venta.producto.nombre + ' - ' + venta.producto.presentacion}"></p>
+
+        <div class="summary">
+            <div><strong>Total venta:</strong> <span th:text="${'$ ' + venta.total}"></span></div>
+            <div><strong>Total abonado:</strong> <span th:text="${'$ ' + totalAbonado}"></span></div>
+            <div><strong>Saldo pendiente:</strong> <span th:text="${'$ ' + saldoPendiente}"></span></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/abonos/guardar/{ventaId}(ventaId=${venta.id})}" th:object="${abono}" method="post">
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input id="fecha" type="date" th:field="*{fecha}">
+                <div class="error" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="monto">Monto</label>
+                <input id="monto" type="number" step="0.01" th:field="*{monto}">
+                <div class="error" th:if="${#fields.hasErrors('monto')}" th:errors="*{monto}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="metodoPago">Método de pago</label>
+                <select id="metodoPago" th:field="*{metodoPago}">
+                    <option value="">Seleccione método</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Nequi">Nequi</option>
+                    <option value="Daviplata">Daviplata</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="observacion">Observación</label>
+                <textarea id="observacion" th:field="*{observacion}"></textarea>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" type="submit">Guardar abono</button>
+                <a class="btn btn-secondary" th:href="@{/ventas/detalle/{id}(id=${venta.id})}">← Volver al detalle</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Abonos registrados</h2>
+
+        <div th:if="${#lists.isEmpty(abonos)}">
+            <p>No hay abonos registrados todavía.</p>
+        </div>
+
+        <div class="table-wrap" th:if="${!#lists.isEmpty(abonos)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Método</th>
+                    <th>Observación</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="abono : ${abonos}">
+                    <td th:text="${abono.fecha}"></td>
+                    <td th:text="${'$ ' + abono.monto}"></td>
+                    <td th:text="${abono.metodoPago}"></td>
+                    <td th:text="${abono.observacion}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

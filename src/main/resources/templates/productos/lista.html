@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos - Vértice Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --negro: #0d0e12;
+            --negro-card: #14161d;
+            --azul: #243c96;
+            --azul-2: #1b2f78;
+            --naranja: #d98a1e;
+            --texto: #f4efe8;
+            --texto-suave: #b9c2d6;
+            --borde: rgba(255,255,255,0.08);
+            --sombra: 0 14px 30px rgba(0,0,0,0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(36,60,150,0.18), transparent 28%),
+                linear-gradient(180deg, #101116 0%, #0b0c10 100%);
+            color: var(--texto);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px 18px 100px;
+        }
+
+        .header-card {
+            background: linear-gradient(180deg, #151822 0%, #101116 100%);
+            border: 1px solid rgba(36,60,150,0.35);
+            border-radius: 26px;
+            padding: 22px;
+            box-shadow: var(--sombra);
+            margin-bottom: 20px;
+        }
+
+        .header-card h1 {
+            margin: 0 0 8px;
+            font-size: 2rem;
+        }
+
+        .header-card p {
+            margin: 0;
+            color: var(--texto-suave);
+            line-height: 1.5;
+        }
+
+        .top-actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            border: 1px solid rgba(36,60,150,0.35);
+            box-shadow: var(--sombra);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--azul), var(--azul-2));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #171922;
+            color: var(--texto);
+        }
+
+        .table-card {
+            background: linear-gradient(180deg, #171922 0%, #12131a 100%);
+            border: 1px solid var(--borde);
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: var(--sombra);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        th {
+            background: rgba(36,60,150,0.18);
+            color: var(--texto);
+            font-size: 0.92rem;
+        }
+
+        td {
+            color: var(--texto-suave);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .estado {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .estado.si {
+            background: rgba(79,160,108,0.18);
+            color: #7fe0a0;
+        }
+
+        .estado.no {
+            background: rgba(212,92,92,0.18);
+            color: #ff9898;
+        }
+
+        .acciones a {
+            color: var(--naranja);
+            text-decoration: none;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+
+        .empty-card {
+            background: linear-gradient(180deg, #171922 0%, #12131a 100%);
+            border: 1px solid var(--borde);
+            border-radius: 22px;
+            padding: 24px;
+            box-shadow: var(--sombra);
+            color: var(--texto-suave);
+        }
+
+        @media (max-width: 720px) {
+            .table-card {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 680px;
+            }
+
+            .header-card h1 {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header-card">
+        <h1>Productos</h1>
+        <p>Gestiona las bolsas y referencias de café disponibles en Vértice Control.</p>
+
+        <div class="top-actions">
+            <a class="btn btn-primary" th:href="@{/productos/nuevo}">+ Nuevo producto</a>
+            <a class="btn btn-secondary" th:href="@{/}">← Volver al inicio</a>
+        </div>
+    </div>
+
+    <div th:if="${error}" style="
+    margin-bottom: 18px;
+    background: rgba(212,92,92,0.15);
+    border: 1px solid rgba(212,92,92,0.35);
+    color: #ffb3b3;
+    padding: 14px 16px;
+    border-radius: 14px;">
+    <span th:text="${error}"></span>
+</div>
+
+    <div th:if="${#lists.isEmpty(productos)}" class="empty-card">
+        No hay productos registrados todavía.
+    </div>
+
+    <div th:if="${!#lists.isEmpty(productos)}" class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Presentación</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Activo</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="producto : ${productos}">
+                <td th:text="${producto.nombre}"></td>
+                <td th:text="${producto.presentacion}"></td>
+                <td th:text="${'$ ' + producto.precio}"></td>
+                <td th:text="${producto.stock}"></td>
+                <td>
+                    <span th:if="${producto.activo}" class="estado si">Sí</span>
+                    <span th:unless="${producto.activo}" class="estado no">No</span>
+                </td>
+                <td class="acciones">
+                    <a th:href="@{/productos/editar/{id}(id=${producto.id})}">Editar</a>
+                    <a th:href="@{/productos/eliminar/{id}(id=${producto.id})}">Eliminar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
